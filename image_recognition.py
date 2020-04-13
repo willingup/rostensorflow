@@ -9,12 +9,17 @@ from tensorflow.models.image.imagenet import classify_image
 
 
 class RosTensorFlow():
+    #构造函数
     def __init__(self):
+        #构造函数有个API可从tensorflow.org下载训练好的inception-v3
         classify_image.maybe_download_and_extract()
+        #创建一个session对象
         self._session = tf.Session()
         classify_image.create_graph()
+        #为opencv图像转换创建一个cv_bridge
         self._cv_bridge = CvBridge()
 
+        #节点的发布者和订阅着
         self._sub = rospy.Subscriber('image', Image, self.callback, queue_size=1)
         self._pub = rospy.Publisher('result', String, queue_size=1)
         self.score_threshold = rospy.get_param('~score_threshold', 0.1)
